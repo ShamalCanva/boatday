@@ -32,10 +32,11 @@ export default function WeatherBackground({ condition }: { condition: SkyConditi
         style={{ backgroundImage: `url(/backgrounds/${condition}.jpg), ${GRADIENTS[condition]}` }}
       />
       {/* Contrast scrim so glass cards and text stay readable over any photo.
-          Kept deliberately strong (not the subtle 10-25% we started with) —
-          this has to guarantee contrast against ANY photo you drop in, not
-          just a favorable one, so err dark. */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-black/35 to-black/55" />
+          Navy/ink instead of plain black — matches the app's own palette
+          (same colour as the nav bar) rather than a generic dark overlay,
+          and still has to hold contrast against whatever photo/illustration
+          gets dropped in, so err dark. */}
+      <div className="absolute inset-0 bg-gradient-to-b from-ink/70 via-navy/45 to-ink/65" />
       {condition === "night" && (
         <div className="absolute inset-0">
           {Array.from({ length: 40 }).map((_, i) => (

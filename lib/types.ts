@@ -13,6 +13,8 @@ export interface CurrentTrip {
   guestCount: number;
   meetTime: string; // "10:00 am"
   departTime: string; // "10:30 am"
+  estimatedReturnTime: string; // "2:00 pm" — back at the marina for a wash down
+  marinaLeaveTime: string; // "2:30 pm" — final departure from the marina
   marinaName: string; // "Corleone Marina, Drummoyne"
   status: TripStatus;
   statusLabel: string; // human label shown in the hero, e.g. "On"

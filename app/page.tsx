@@ -39,6 +39,21 @@ export default async function PlanPage() {
     <main className="relative min-h-screen">
       <WeatherBackground condition={sky} />
 
+      {/* Frosted blur behind the hero specifically — busy photo detail (a
+          skyline, boats, etc.) sits right where the heading text is, and a
+          flat dark scrim alone wasn't enough separation. Height is a rough
+          match for the hero's content; the mask fades it out smoothly so
+          there's no hard edge above the first card. */}
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 z-[5] h-[420px] bg-ink/20 backdrop-blur-xl"
+        style={{
+          WebkitMaskImage:
+            "linear-gradient(to bottom, black 0%, black 55%, transparent 100%)",
+          maskImage:
+            "linear-gradient(to bottom, black 0%, black 55%, transparent 100%)",
+        }}
+      />
+
       <div className="relative z-10 mx-auto max-w-md px-5 pt-safe">
         {/* Hero */}
         <section className="pt-8 pb-6 text-white">
@@ -75,10 +90,10 @@ export default async function PlanPage() {
           </Link>
         </section>
 
-        {/* Today's plan */}
+        {/* The plan */}
         <GlassCard className="mb-4">
           <p className="text-xs font-semibold uppercase tracking-[0.14em] text-white/85">
-            Today&rsquo;s Plan
+            The Plan
           </p>
           <dl className="mt-3 space-y-2 text-[15px]">
             <div className="flex justify-between gap-3">
@@ -91,6 +106,16 @@ export default async function PlanPage() {
             </div>
           </dl>
           <p className="mt-4 text-[15px] leading-relaxed text-white/95">{currentTrip.dayPlan}</p>
+          <dl className="mt-4 space-y-2 border-t border-white/10 pt-3 text-[15px]">
+            <div className="flex justify-between gap-3">
+              <dt className="text-white/85">Estimated back at marina (wash down)</dt>
+              <dd className="font-semibold">{currentTrip.estimatedReturnTime}</dd>
+            </div>
+            <div className="flex justify-between gap-3">
+              <dt className="text-white/85">Leave marina</dt>
+              <dd className="font-semibold">{currentTrip.marinaLeaveTime}</dd>
+            </div>
+          </dl>
           {currentTrip.captainNote && (
             <p className="mt-3 rounded-2xl bg-white/10 px-3 py-2 text-[13px] italic text-white/85">
               {currentTrip.captainNote}
@@ -205,7 +230,7 @@ export default async function PlanPage() {
 
           {/* Weather details */}
           <GlassCard>
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-white/85">Today&rsquo;s Weather</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-white/85">Weather on the Day</p>
             {weather.available && weather.current ? (
               <div className="mt-3 grid grid-cols-2 gap-4 text-[15px]">
                 <div>

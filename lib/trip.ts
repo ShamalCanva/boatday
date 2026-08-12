@@ -23,6 +23,8 @@ export const currentTrip: CurrentTrip = {
   guestCount: 6,
   meetTime: "10:00 am",
   departTime: "10:30 am",
+  estimatedReturnTime: "2:00 pm",
+  marinaLeaveTime: "2:30 pm",
   marinaName: "Corleone Marina, Drummoyne",
   status: "on",
   statusLabel: "On",
