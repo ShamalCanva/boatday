@@ -35,6 +35,13 @@ export const currentTrip: CurrentTrip = {
     "We'll cruise out, collect lunch from Doyles on the Wharf Takeaway at Watsons Bay, find a mooring to settle in, enjoy the harbour, then cruise a little more before heading back.",
   lunchPlan: "Doyles on the Wharf Takeaway, Watsons Bay",
   captainNote: undefined,
+  guests: [
+    { name: "Shamal.S", role: "Captain", status: "coming" },
+    { name: "Matt.H", status: "coming" },
+    { name: "Mick.E", status: "coming" },
+    { name: "Arnold.L", status: "coming" },
+    { name: "Matt.A", status: "coming" },
+  ],
   coordinates: {
     marina: {
       lat: -33.8531,

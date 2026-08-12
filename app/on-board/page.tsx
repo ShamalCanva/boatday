@@ -1,5 +1,6 @@
-import ContentCard from "@/components/ContentCard";
+import GlassCard from "@/components/GlassCard";
 import PageHeader from "@/components/PageHeader";
+import WeatherBackground from "@/components/WeatherBackground";
 import { currentTrip } from "@/lib/trip";
 
 const FAQS = [
@@ -23,36 +24,45 @@ const FAQS = [
 
 export default function OnBoardPage() {
   return (
-    <main className="min-h-screen bg-beige px-5 pb-10">
-      <PageHeader title="On Board" subtitle="A few things to know before you step on." />
+    <main className="relative min-h-screen">
+      <WeatherBackground condition={currentTrip.backgroundMood} />
 
-      <div className="space-y-4">
-        <ContentCard>
-          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-harbour">Shoes off</p>
-          <p className="mt-2 text-[15px] leading-relaxed">
-            Shoes come off before boarding to keep the boat clean and safe. We have storage for them.
-          </p>
-        </ContentCard>
+      <div className="relative z-10 mx-auto max-w-md px-5 pb-10">
+        <PageHeader title="On Board" subtitle="A few things to know before you step on." />
 
-        <ContentCard>
-          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-harbour">Food</p>
-          <p className="mt-2 text-[15px] leading-relaxed">Lunch is sorted: {currentTrip.lunchPlan}.</p>
-        </ContentCard>
+        <div className="space-y-4">
+          <GlassCard>
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-white/85">Shoes off</p>
+            <p className="mt-2 text-[15px] leading-relaxed text-white/95">
+              Shoes come off before boarding to keep the boat clean and safe. We have storage for
+              them.
+            </p>
+          </GlassCard>
 
-        <ContentCard>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-harbour">FAQs</p>
-          <div className="divide-y divide-navy/8">
-            {FAQS.map((item) => (
-              <details key={item.q} className="group py-3 first:pt-0 last:pb-0">
-                <summary className="flex cursor-pointer list-none items-center justify-between text-[15px] font-medium">
-                  {item.q}
-                  <span className="ml-3 text-text-navy/40 transition-transform group-open:rotate-180">⌄</span>
-                </summary>
-                <p className="mt-2 text-[14px] leading-relaxed text-text-navy/75">{item.a}</p>
-              </details>
-            ))}
-          </div>
-        </ContentCard>
+          <GlassCard>
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-white/85">Food</p>
+            <p className="mt-2 text-[15px] leading-relaxed text-white/95">
+              Lunch is sorted: {currentTrip.lunchPlan}.
+            </p>
+          </GlassCard>
+
+          <GlassCard>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-white/85">FAQs</p>
+            <div className="divide-y divide-white/10">
+              {FAQS.map((item) => (
+                <details key={item.q} className="group py-3 first:pt-0 last:pb-0">
+                  <summary className="flex cursor-pointer list-none items-center justify-between text-[15px] font-medium">
+                    {item.q}
+                    <span className="ml-3 text-white/50 transition-transform group-open:rotate-180">
+                      ⌄
+                    </span>
+                  </summary>
+                  <p className="mt-2 text-[14px] leading-relaxed text-white/80">{item.a}</p>
+                </details>
+              ))}
+            </div>
+          </GlassCard>
+        </div>
       </div>
     </main>
   );

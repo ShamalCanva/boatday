@@ -122,3 +122,19 @@ export function ParkingIcon({ className }: { className?: string }) {
     </svg>
   );
 }
+
+export function WheelIcon({ className }: { className?: string }) {
+  // A ship's helm — used to mark the captain in the guest list.
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className}>
+      <circle cx="12" cy="12" r="7.2" stroke="currentColor" strokeWidth="1.6" />
+      <circle cx="12" cy="12" r="1.8" fill="currentColor" />
+      <path
+        d="M12 4.8V8M12 16v3.2M4.8 12H8M16 12h3.2M7 7l2 2M15 15l2 2M7 17l2-2M15 9l2-2"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}

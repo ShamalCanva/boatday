@@ -1,5 +1,8 @@
-import ContentCard from "@/components/ContentCard";
+import GlassCard from "@/components/GlassCard";
 import PageHeader from "@/components/PageHeader";
+import WeatherBackground from "@/components/WeatherBackground";
+import { currentTrip } from "@/lib/trip";
+import { LifeRingIcon, AnchorIcon } from "@/components/icons";
 
 const RULES = [
   "Listen to the captain and crew at all times.",
@@ -21,32 +24,44 @@ const EQUIPMENT = [
 
 export default function SafetyPage() {
   return (
-    <main className="min-h-screen bg-beige px-5 pb-10">
-      <PageHeader title="Safety" />
+    <main className="relative min-h-screen">
+      <WeatherBackground condition={currentTrip.backgroundMood} />
 
-      <ContentCard className="mb-4">
-        <p className="text-[20px] font-semibold text-navy">Good vibes, safe vibes.</p>
-        <ul className="mt-3 space-y-2.5">
-          {RULES.map((rule) => (
-            <li key={rule} className="flex gap-2.5 text-[15px] leading-relaxed">
-              <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-coral" />
-              <span>{rule}</span>
-            </li>
-          ))}
-        </ul>
-      </ContentCard>
+      <div className="relative z-10 mx-auto max-w-md px-5 pb-10">
+        <PageHeader title="Safety" />
 
-      <ContentCard>
-        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-harbour">Equipment onboard</p>
-        <ul className="mt-3 space-y-2.5">
-          {EQUIPMENT.map((item) => (
-            <li key={item} className="flex gap-2.5 text-[15px] leading-relaxed">
-              <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-navy/50" />
-              <span>{item}</span>
-            </li>
-          ))}
-        </ul>
-      </ContentCard>
+        <GlassCard className="mb-4">
+          <div className="mb-1 flex items-center gap-2">
+            <LifeRingIcon className="h-5 w-5 text-coral" />
+            <p className="text-[19px] font-semibold">Good vibes, safe vibes.</p>
+          </div>
+          <ul className="mt-3 space-y-2.5">
+            {RULES.map((rule) => (
+              <li key={rule} className="flex gap-2.5 text-[15px] leading-relaxed text-white/95">
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-coral" />
+                <span>{rule}</span>
+              </li>
+            ))}
+          </ul>
+        </GlassCard>
+
+        <GlassCard>
+          <div className="mb-1 flex items-center gap-2">
+            <AnchorIcon className="h-4 w-4 text-white/85" />
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-white/85">
+              Equipment onboard
+            </p>
+          </div>
+          <ul className="mt-3 space-y-2.5">
+            {EQUIPMENT.map((item) => (
+              <li key={item} className="flex gap-2.5 text-[15px] leading-relaxed text-white/95">
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-white/50" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </GlassCard>
+      </div>
     </main>
   );
 }

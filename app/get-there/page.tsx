@@ -1,9 +1,18 @@
 import { currentTrip } from "@/lib/trip";
-import ContentCard from "@/components/ContentCard";
+import GlassCard from "@/components/GlassCard";
 import PageHeader from "@/components/PageHeader";
+import WeatherBackground from "@/components/WeatherBackground";
+import RouteMapCard from "@/components/RouteMapCard";
+import TransportTabs from "@/components/TransportTabs";
 
 function appleMapsUrl(lat: number, lon: number, label: string) {
-  return `https://maps.apple.com/?daddr=${lat},${lon}&q=${encodeURIComponent(label)}&dirflg=w`;
+  // saddr=Current Location forces Maps to default the "From" field to the
+  // user's current location instead of leaving it blank for them to fill in
+  // — without this, some Maps contexts (especially the web fallback) show
+  // an empty "From" field the guest has to tap/type into themselves.
+  return `https://maps.apple.com/?daddr=${lat},${lon}&saddr=${encodeURIComponent(
+    "Current Location"
+  )}&q=${encodeURIComponent(label)}&dirflg=w`;
 }
 
 function googleMapsUrl(lat: number, lon: number) {
@@ -32,47 +41,69 @@ export default function GetTherePage() {
   ];
 
   return (
-    <main className="min-h-screen bg-beige px-5">
-      <PageHeader title="Get There" subtitle={currentTrip.marinaName} />
+    <main className="relative min-h-screen">
+      <WeatherBackground condition={currentTrip.backgroundMood} />
 
-      <a
-        href={appleMapsUrl(peppercornReserve.lat, peppercornReserve.lon, peppercornReserve.label)}
-        className="mb-4 flex items-center justify-center gap-2 rounded-full bg-navy px-6 py-4 text-[16px] font-semibold text-white shadow-sm"
-      >
-        Open in Apple Maps
-      </a>
-      <a
-        href={googleMapsUrl(peppercornReserve.lat, peppercornReserve.lon)}
-        className="mb-6 block text-center text-[13px] text-harbour underline"
-      >
-        Using Android or Google Maps instead? Tap here.
-      </a>
+      <div className="relative z-10 mx-auto max-w-md px-5">
+        <PageHeader title="Get There" subtitle={currentTrip.marinaName} />
 
-      <ContentCard className="mb-4">
-        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-harbour">Meeting point</p>
-        <p className="mt-1 text-[17px] font-semibold">{currentTrip.marinaName}</p>
-        <p className="mt-1 text-[14px] text-text-navy/70">Meet at the marina gate.</p>
-      </ContentCard>
+        <a
+          href={appleMapsUrl(peppercornReserve.lat, peppercornReserve.lon, peppercornReserve.label)}
+          className="flex items-center justify-center gap-2 rounded-full bg-coral px-6 py-4 text-[16px] font-semibold text-white shadow-[0_6px_18px_rgba(217,122,98,0.35)]"
+        >
+          Open in Apple Maps
+        </a>
+        <a
+          href={googleMapsUrl(peppercornReserve.lat, peppercornReserve.lon)}
+          className="mb-5 mt-3 block text-center text-[13px] text-white/80 underline"
+        >
+          Using Android or Google Maps instead? Tap here.
+        </a>
 
-      <div className="space-y-3 pb-10">
-        {steps.map((step, i) => (
-          <ContentCard key={step.title} className="flex gap-3">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-navy text-[14px] font-semibold text-white">
-              {i + 1}
-            </div>
-            <div>
-              <p className="flex items-center gap-1.5 text-[15px] font-semibold">
-                {step.title}
-                {!step.point.verified && (
-                  <span className="rounded-full bg-coral/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-coral">
-                    check pin
-                  </span>
-                )}
-              </p>
-              <p className="mt-1 text-[14px] leading-relaxed text-text-navy/75">{step.body}</p>
-            </div>
-          </ContentCard>
-        ))}
+        <div className="mb-4">
+          <RouteMapCard
+            reserve={peppercornReserve}
+            marina={marina}
+            href={appleMapsUrl(peppercornReserve.lat, peppercornReserve.lon, peppercornReserve.label)}
+          />
+        </div>
+
+        <p className="mb-2 mt-6 text-xs font-semibold uppercase tracking-[0.14em] text-white/85">
+          How are you getting here?
+        </p>
+        <div className="mb-4">
+          <TransportTabs />
+        </div>
+
+        <GlassCard className="mb-4">
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-white/85">Meeting point</p>
+          <p className="mt-1 text-[17px] font-semibold">{currentTrip.marinaName}</p>
+          <p className="mt-1 text-[14px] text-white/85">Meet at the marina gate.</p>
+        </GlassCard>
+
+        <p className="mb-2 mt-6 text-xs font-semibold uppercase tracking-[0.14em] text-white/85">
+          The walk in, step by step
+        </p>
+        <div className="space-y-3 pb-10">
+          {steps.map((step, i) => (
+            <GlassCard key={step.title} className="flex gap-3">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-coral text-[14px] font-semibold text-white">
+                {i + 1}
+              </div>
+              <div>
+                <p className="flex items-center gap-1.5 text-[15px] font-semibold">
+                  {step.title}
+                  {!step.point.verified && (
+                    <span className="rounded-full bg-coral/25 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white">
+                      check pin
+                    </span>
+                  )}
+                </p>
+                <p className="mt-1 text-[14px] leading-relaxed text-white/85">{step.body}</p>
+              </div>
+            </GlassCard>
+          ))}
+        </div>
       </div>
     </main>
   );

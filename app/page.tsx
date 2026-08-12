@@ -7,6 +7,7 @@ import WeatherBackground from "@/components/WeatherBackground";
 import GlassCard from "@/components/GlassCard";
 import WindCompass from "@/components/WindCompass";
 import TideCurve from "@/components/TideCurve";
+import GuestList from "@/components/GuestList";
 
 export const revalidate = 600;
 
@@ -19,7 +20,7 @@ function statusDotClass(status: string) {
 export default async function PlanPage() {
   const { marina } = currentTrip.coordinates;
   const [weather, marine] = await Promise.all([
-    getWeather(marina.lat, marina.lon),
+    getWeather(marina.lat, marina.lon, currentTrip.date),
     getMarineConditions(currentTrip.date),
   ]);
 
@@ -73,12 +74,23 @@ export default async function PlanPage() {
             <span className="text-sm">{currentTrip.marinaName}</span>
           </div>
 
+          {/* Forecast for the trip day, not "current" conditions — a guest
+              checking this before Friday cares what Friday looks like, not
+              what it's doing outside right now. */}
           <p className="mt-4 text-5xl font-semibold tabular-nums">
-            {weather.available && weather.current ? `${weather.current.temperature}°` : "—°"}
+            {weather.available && weather.forDay ? `${weather.forDay.temperatureMax}°` : "—°"}
+            <span className="ml-1.5 text-xl font-medium text-white/60 align-middle">
+              {weather.available && weather.forDay ? `/${weather.forDay.temperatureMin}°` : ""}
+            </span>
             <span className="ml-3 text-xl font-medium text-white align-middle">
-              {weather.available && weather.current ? weather.current.conditionDescription : "Weather not connected yet"}
+              {weather.available && weather.forDay ? weather.forDay.conditionDescription : "Weather not connected yet"}
             </span>
           </p>
+          {weather.available && weather.forDay && (
+            <p className="mt-1 text-[13px] text-white/75">
+              {Math.round(weather.forDay.precipitationChance * 100)}% chance of rain
+            </p>
+          )}
 
           <p className="mt-2 text-[15px] text-white/95">
             Meet {currentTrip.meetTime} · Depart {currentTrip.departTime}
@@ -123,6 +135,14 @@ export default async function PlanPage() {
               {currentTrip.captainNote}
             </p>
           )}
+        </GlassCard>
+
+        {/* Guests */}
+        <p className="mb-2 mt-2 text-xs font-semibold uppercase tracking-[0.14em] text-white/85">
+          Who&rsquo;s Coming
+        </p>
+        <GlassCard className="mb-4">
+          <GuestList guests={currentTrip.guests} />
         </GlassCard>
 
         {/* Harbour conditions */}
@@ -245,7 +265,9 @@ export default async function PlanPage() {
                 </div>
                 <div>
                   <p className="text-xs text-white/85">Rain chance</p>
-                  <p className="text-xl font-semibold">{Math.round(weather.current.precipitationChance * 100)}%</p>
+                  <p className="text-xl font-semibold">
+                    {Math.round((weather.forDay?.precipitationChance ?? weather.current.precipitationChance) * 100)}%
+                  </p>
                 </div>
                 <div>
                   <p className="text-xs text-white/85">Sunset</p>

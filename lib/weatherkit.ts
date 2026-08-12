@@ -40,6 +40,25 @@ async function getSignedToken(): Promise<string> {
   return token;
 }
 
+/**
+ * WeatherKit timestamps are UTC instants; this reads them back out in
+ * Sydney local time so date/hour matching lines up with what a guest here
+ * actually experiences, regardless of what timezone param the request used.
+ */
+function sydneyDateHour(iso: string): { date: string; hour: number } {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "Australia/Sydney",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    hour12: false,
+  }).formatToParts(new Date(iso));
+  const map: Record<string, string> = {};
+  for (const p of parts) map[p.type] = p.value;
+  return { date: `${map.year}-${map.month}-${map.day}`, hour: Number(map.hour) % 24 };
+}
+
 function mapConditionDescription(code: string): string {
   // Human-friendly fallback labels for Apple's WeatherKit condition codes.
   const map: Record<string, string> = {
@@ -61,7 +80,7 @@ function mapConditionDescription(code: string): string {
   return map[code] ?? code.replace(/([a-z])([A-Z])/g, "$1 $2");
 }
 
-export async function getWeather(lat: number, lon: number): Promise<WeatherResult> {
+export async function getWeather(lat: number, lon: number, targetDate?: string): Promise<WeatherResult> {
   try {
     const token = await getSignedToken();
     const url = `${WEATHERKIT_BASE}/en_US/${lat}/${lon}?dataSets=currentWeather,forecastHourly,forecastDaily&timezone=Australia%2FSydney`;
@@ -80,8 +99,18 @@ export async function getWeather(lat: number, lon: number): Promise<WeatherResul
 
     const data = await res.json();
     const cw = data.currentWeather;
-    const daily = data.forecastDaily?.days?.[0];
+    const days = data.forecastDaily?.days ?? [];
+    // The trip day's forecast, not necessarily today — WeatherKit returns
+    // ~10 days starting from today, so match on date rather than assuming
+    // index 0. Falls back to today if the trip date isn't in range.
+    const forDay =
+      (targetDate && days.find((d: any) => (d.forecastStart ?? "").slice(0, 10) === targetDate)) || days[0];
     const hourly = (data.forecastHourly?.hours ?? []).slice(0, 12);
+    // Prefer the daytime-specific rain chance over the whole-day figure (which
+    // spans into the overnight period) — used consistently below so the hero
+    // and the "Weather on the Day" card never show two different numbers for
+    // what a guest reads as the same question.
+    const dayRainChance = forDay?.daytimeForecast?.precipitationChance ?? forDay?.precipitationChance ?? 0;
 
     return {
       available: true,
@@ -97,11 +126,23 @@ export async function getWeather(lat: number, lon: number): Promise<WeatherResul
         precipitationChance: cw.precipitationChance ?? 0,
         isDaylight: cw.daylight ?? true,
       },
-      today: daily
+      today: forDay
         ? {
-            sunrise: daily.sunrise,
-            sunset: daily.sunset,
-            precipitationChanceMax: daily.precipitationChance,
+            sunrise: forDay.sunrise,
+            sunset: forDay.sunset,
+            precipitationChanceMax: dayRainChance,
+          }
+        : undefined,
+      forDay: forDay
+        ? {
+            date: (forDay.forecastStart ?? "").slice(0, 10),
+            temperatureMax: Math.round(forDay.temperatureMax),
+            temperatureMin: Math.round(forDay.temperatureMin),
+            conditionCode: forDay.daytimeForecast?.conditionCode ?? forDay.conditionCode,
+            conditionDescription: mapConditionDescription(
+              forDay.daytimeForecast?.conditionCode ?? forDay.conditionCode
+            ),
+            precipitationChance: dayRainChance,
           }
         : undefined,
       hourly: hourly.map((h: any) => ({
