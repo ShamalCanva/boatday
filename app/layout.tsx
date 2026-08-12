@@ -3,8 +3,19 @@ import BottomNav from "@/components/BottomNav";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://boat.coconut.vision"),
   title: "Boat Day Guide",
   description: "Everything you need for Friday's boat day.",
+  openGraph: {
+    title: "Boat Day Guide",
+    description: "Everything you need for Friday's boat day.",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Boat Day Guide",
+    description: "Everything you need for Friday's boat day.",
+  },
 };
 
 export const viewport: Viewport = {

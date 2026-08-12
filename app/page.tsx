@@ -8,6 +8,7 @@ import GlassCard from "@/components/GlassCard";
 import WindCompass from "@/components/WindCompass";
 import TideCurve from "@/components/TideCurve";
 import GuestList from "@/components/GuestList";
+import { WeatherIcon } from "@/components/WeatherIcon";
 
 export const revalidate = 600;
 
@@ -85,7 +86,10 @@ export default async function PlanPage() {
               "current" conditions, and not a 24-hour high/low either. A guest
               checking this before Friday cares what it'll be like around
               10am Friday, not what it's doing outside right now. */}
-          <p className="mt-4 text-5xl font-semibold tabular-nums">
+          <p className="mt-4 flex items-center text-5xl font-semibold tabular-nums">
+            {weather.available && weather.forDay && (
+              <WeatherIcon code={weather.forDay.conditionCode} className="mr-2 h-12 w-12 shrink-0" />
+            )}
             {weather.available && weather.forDay ? `${weather.forDay.temperature}°` : "—°"}
             <span className="ml-3 text-xl font-medium text-white align-middle">
               {weather.available && weather.forDay ? weather.forDay.conditionDescription : "Weather not connected yet"}
