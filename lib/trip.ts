@@ -26,6 +26,9 @@ export const currentTrip: CurrentTrip = {
   marinaName: "Corleone Marina, Drummoyne",
   status: "on",
   statusLabel: "On",
+  // Set by hand to match whatever mood/photo fits this specific day.
+  // "sunset" pairs with public/backgrounds/sunset.jpg.
+  backgroundMood: "sunset",
   dayPlan:
     "We'll cruise out, collect lunch from Doyles on the Wharf Takeaway at Watsons Bay, find a mooring to settle in, enjoy the harbour, then cruise a little more before heading back.",
   lunchPlan: "Doyles on the Wharf Takeaway, Watsons Bay",

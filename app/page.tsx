@@ -3,30 +3,12 @@ import { currentTrip } from "@/lib/trip";
 import { getWeather } from "@/lib/weatherkit";
 import { getMarineConditions } from "@/lib/marine";
 import { formatDateLong, formatTime, kmhToKnots } from "@/lib/format";
-import WeatherBackground, { type SkyCondition } from "@/components/WeatherBackground";
+import WeatherBackground from "@/components/WeatherBackground";
 import GlassCard from "@/components/GlassCard";
 import WindCompass from "@/components/WindCompass";
 import TideCurve from "@/components/TideCurve";
 
 export const revalidate = 600;
-
-function skyConditionFor(
-  weather: Awaited<ReturnType<typeof getWeather>>
-): SkyCondition {
-  if (!weather.available || !weather.current) return "clear";
-  const { conditionCode, isDaylight } = weather.current;
-  const sunset = weather.today?.sunset ? new Date(weather.today.sunset).getTime() : undefined;
-
-  if (sunset) {
-    const diffMin = Math.abs(Date.now() - sunset) / 60000;
-    if (diffMin < 45) return "sunset";
-  }
-  if (!isDaylight) return "night";
-
-  if (/Rain|Shower|Drizzle|Thunder|Storm/i.test(conditionCode)) return "rain";
-  if (/Cloudy|Overcast|Haze|Fog/i.test(conditionCode)) return "cloudy";
-  return "clear";
-}
 
 function statusDotClass(status: string) {
   if (status === "cancelled") return "bg-coral";
@@ -41,7 +23,8 @@ export default async function PlanPage() {
     getMarineConditions(currentTrip.date),
   ]);
 
-  const sky = skyConditionFor(weather);
+  // Fixed per-trip, not computed from live weather — see lib/types.ts.
+  const sky = currentTrip.backgroundMood;
   const nextExtreme = marine.tide?.extremes.find(
     (e) => new Date(e.timeIso).getTime() > Date.now()
   );

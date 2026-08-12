@@ -1,5 +1,10 @@
 export type TripStatus = "on" | "weather-watch" | "updated" | "cancelled";
 
+// The Plan tab's background mood. Set once per trip in lib/trip.ts, not
+// computed live from weather — a boat day happens once, so the background
+// doesn't need to shift under a guest as they look at the page.
+export type SkyCondition = "clear" | "cloudy" | "rain" | "sunset" | "night";
+
 export interface CurrentTrip {
   /** ISO date, e.g. "2026-08-14" */
   date: string;
@@ -11,6 +16,8 @@ export interface CurrentTrip {
   marinaName: string; // "Corleone Marina, Drummoyne"
   status: TripStatus;
   statusLabel: string; // human label shown in the hero, e.g. "On"
+  /** Fixed background mood for this trip's Plan tab — see SkyCondition above. */
+  backgroundMood: SkyCondition;
   dayPlan: string; // multi-paragraph plain text, rendered as paragraphs
   lunchPlan: string;
   captainNote?: string;

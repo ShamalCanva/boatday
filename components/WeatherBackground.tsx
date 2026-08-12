@@ -1,4 +1,4 @@
-export type SkyCondition = "clear" | "cloudy" | "rain" | "sunset" | "night";
+import type { SkyCondition } from "@/lib/types";
 
 // Darker and more saturated than the original pass — these need to hold
 // contrast for white text on their own, before the scrim below even helps.
