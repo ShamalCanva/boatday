@@ -1,0 +1,47 @@
+@import "tailwindcss";
+
+@theme {
+  /* Boat Day Guide palette (PRD) */
+  --color-beige: #f5f0e6;
+  --color-navy: #0b1f3a;
+  --color-ink: #07172b;
+  --color-cream: #fffdf8;
+  --color-harbour: #5e8fa3;
+  --color-coral: #d97a62;
+  --color-text-navy: #16243a;
+
+  --font-sans: -apple-system, "SF Pro Text", "SF Pro Display", system-ui,
+    "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+  --radius-card: 1.6rem;
+}
+
+html,
+body {
+  background-color: var(--color-beige);
+  color: var(--color-text-navy);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior-y: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Safe-area helpers */
+.pb-safe {
+  padding-bottom: max(env(safe-area-inset-bottom), 0.75rem);
+}
+
+.pt-safe {
+  padding-top: env(safe-area-inset-top);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
