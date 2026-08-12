@@ -13,7 +13,7 @@ export const revalidate = 600;
 function statusDotClass(status: string) {
   if (status === "cancelled") return "bg-coral";
   if (status === "weather-watch") return "bg-coral";
-  return "bg-white";
+  return "bg-emerald-400";
 }
 
 export default async function PlanPage() {
@@ -65,8 +65,10 @@ export default async function PlanPage() {
           </h1>
 
           <div className="mt-2 flex items-center gap-2 text-white">
-            <span className={`h-2 w-2 rounded-full ${statusDotClass(currentTrip.status)}`} />
-            <span className="text-sm font-medium">{currentTrip.statusLabel}</span>
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 backdrop-blur-sm">
+              <span className={`h-1.5 w-1.5 rounded-full ${statusDotClass(currentTrip.status)}`} />
+              <span className="text-sm font-medium">{currentTrip.statusLabel}</span>
+            </span>
             <span className="text-white/40">·</span>
             <span className="text-sm">{currentTrip.marinaName}</span>
           </div>
@@ -108,7 +110,7 @@ export default async function PlanPage() {
           <p className="mt-4 text-[15px] leading-relaxed text-white/95">{currentTrip.dayPlan}</p>
           <dl className="mt-4 space-y-2 border-t border-white/10 pt-3 text-[15px]">
             <div className="flex justify-between gap-3">
-              <dt className="text-white/85">Estimated back at marina (wash down)</dt>
+              <dt className="text-white/85">Estimated back at marina</dt>
               <dd className="font-semibold">{currentTrip.estimatedReturnTime}</dd>
             </div>
             <div className="flex justify-between gap-3">
