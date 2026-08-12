@@ -80,10 +80,28 @@ function mapConditionDescription(code: string): string {
   return map[code] ?? code.replace(/([a-z])([A-Z])/g, "$1 $2");
 }
 
-export async function getWeather(lat: number, lon: number, targetDate?: string): Promise<WeatherResult> {
+export async function getWeather(
+  lat: number,
+  lon: number,
+  targetDate?: string,
+  targetHour?: number
+): Promise<WeatherResult> {
   try {
     const token = await getSignedToken();
-    const url = `${WEATHERKIT_BASE}/en_US/${lat}/${lon}?dataSets=currentWeather,forecastHourly,forecastDaily&timezone=Australia%2FSydney`;
+    let url = `${WEATHERKIT_BASE}/en_US/${lat}/${lon}?dataSets=currentWeather,forecastHourly,forecastDaily&timezone=Australia%2FSydney`;
+
+    // Without an explicit window, forecastHourly can fall back to a ~24h
+    // default — not enough to reach a trip day that's more than a day out.
+    // Request through the end of the trip date explicitly (Sydney is
+    // UTC+10 in August — no daylight saving to account for).
+    if (targetDate) {
+      const hourlyStart = new Date();
+      const hourlyEnd = new Date(`${targetDate}T23:59:59+10:00`);
+      hourlyEnd.setUTCDate(hourlyEnd.getUTCDate() + 1);
+      url += `&hourlyStart=${encodeURIComponent(hourlyStart.toISOString())}&hourlyEnd=${encodeURIComponent(
+        hourlyEnd.toISOString()
+      )}`;
+    }
 
     const res = await fetch(url, {
       headers: { Authorization: `Bearer ${token}` },
@@ -100,17 +118,41 @@ export async function getWeather(lat: number, lon: number, targetDate?: string):
     const data = await res.json();
     const cw = data.currentWeather;
     const days = data.forecastDaily?.days ?? [];
-    // The trip day's forecast, not necessarily today — WeatherKit returns
-    // ~10 days starting from today, so match on date rather than assuming
-    // index 0. Falls back to today if the trip date isn't in range.
-    const forDay =
-      (targetDate && days.find((d: any) => (d.forecastStart ?? "").slice(0, 10) === targetDate)) || days[0];
-    const hourly = (data.forecastHourly?.hours ?? []).slice(0, 12);
-    // Prefer the daytime-specific rain chance over the whole-day figure (which
-    // spans into the overnight period) — used consistently below so the hero
-    // and the "Weather on the Day" card never show two different numbers for
-    // what a guest reads as the same question.
-    const dayRainChance = forDay?.daytimeForecast?.precipitationChance ?? forDay?.precipitationChance ?? 0;
+    const allHours = data.forecastHourly?.hours ?? [];
+
+    // The trip day's daily summary, not necessarily today — WeatherKit
+    // returns ~10 days starting from today, so match on date rather than
+    // assuming index 0. Falls back to today if the trip date isn't in range.
+    const forDayDaily =
+      (targetDate && days.find((d: any) => sydneyDateHour(d.forecastStart).date === targetDate)) || days[0];
+
+    // The specific hour on the trip day closest to the trip's meet time —
+    // this is what actually drives the hero, since "today's weather" or a
+    // 24-hour high/low isn't what a guest wants when checking ahead of time.
+    const dayHours = targetDate
+      ? allHours.filter((h: any) => sydneyDateHour(h.forecastStart).date === targetDate)
+      : [];
+    const wantHour = targetHour ?? 12;
+    const atMeetTime = dayHours.reduce((best: any, h: any) => {
+      if (!best) return h;
+      const bestDiff = Math.abs(sydneyDateHour(best.forecastStart).hour - wantHour);
+      const hDiff = Math.abs(sydneyDateHour(h.forecastStart).hour - wantHour);
+      return hDiff < bestDiff ? h : best;
+    }, null);
+
+    // Prefer the specific hour's rain chance, then the daytime figure, then
+    // the whole-day figure (which spans into the overnight period) — used
+    // consistently below so the hero and "Weather on the Day" card never
+    // show two different numbers for what a guest reads as the same question.
+    const dayRainChance =
+      atMeetTime?.precipitationChance ??
+      forDayDaily?.daytimeForecast?.precipitationChance ??
+      forDayDaily?.precipitationChance ??
+      0;
+
+    // Hourly strip (Wind card) — scoped to the trip day when we have one,
+    // rather than "next 12 hours from now" which would be today's hours.
+    const hourlySource = targetDate ? dayHours : allHours.slice(0, 12);
 
     return {
       available: true,
@@ -126,26 +168,39 @@ export async function getWeather(lat: number, lon: number, targetDate?: string):
         precipitationChance: cw.precipitationChance ?? 0,
         isDaylight: cw.daylight ?? true,
       },
-      today: forDay
+      today: forDayDaily
         ? {
-            sunrise: forDay.sunrise,
-            sunset: forDay.sunset,
+            sunrise: forDayDaily.sunrise,
+            sunset: forDayDaily.sunset,
             precipitationChanceMax: dayRainChance,
           }
         : undefined,
-      forDay: forDay
+      forDay: atMeetTime
         ? {
-            date: (forDay.forecastStart ?? "").slice(0, 10),
-            temperatureMax: Math.round(forDay.temperatureMax),
-            temperatureMin: Math.round(forDay.temperatureMin),
-            conditionCode: forDay.daytimeForecast?.conditionCode ?? forDay.conditionCode,
+            date: sydneyDateHour(atMeetTime.forecastStart).date,
+            temperature: Math.round(atMeetTime.temperature),
+            temperatureApparent:
+              atMeetTime.temperatureApparent !== undefined ? Math.round(atMeetTime.temperatureApparent) : undefined,
+            conditionCode: atMeetTime.conditionCode,
+            conditionDescription: mapConditionDescription(atMeetTime.conditionCode),
+            precipitationChance: dayRainChance,
+            uvIndex: atMeetTime.uvIndex,
+            windSpeed: atMeetTime.windSpeed,
+            windGust: atMeetTime.windGust,
+            windDirection: atMeetTime.windDirection,
+          }
+        : forDayDaily
+        ? {
+            date: sydneyDateHour(forDayDaily.forecastStart).date,
+            temperature: Math.round(forDayDaily.temperatureMax),
+            conditionCode: forDayDaily.daytimeForecast?.conditionCode ?? forDayDaily.conditionCode,
             conditionDescription: mapConditionDescription(
-              forDay.daytimeForecast?.conditionCode ?? forDay.conditionCode
+              forDayDaily.daytimeForecast?.conditionCode ?? forDayDaily.conditionCode
             ),
             precipitationChance: dayRainChance,
           }
         : undefined,
-      hourly: hourly.map((h: any) => ({
+      hourly: hourlySource.map((h: any) => ({
         time: h.forecastStart,
         temperature: Math.round(h.temperature),
         windSpeed: h.windSpeed,

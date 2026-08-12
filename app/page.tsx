@@ -2,7 +2,7 @@ import Link from "next/link";
 import { currentTrip } from "@/lib/trip";
 import { getWeather } from "@/lib/weatherkit";
 import { getMarineConditions } from "@/lib/marine";
-import { formatDateLong, formatTime, kmhToKnots } from "@/lib/format";
+import { formatDateLong, formatTime, kmhToKnots, parseHour12 } from "@/lib/format";
 import WeatherBackground from "@/components/WeatherBackground";
 import GlassCard from "@/components/GlassCard";
 import WindCompass from "@/components/WindCompass";
@@ -19,8 +19,9 @@ function statusDotClass(status: string) {
 
 export default async function PlanPage() {
   const { marina } = currentTrip.coordinates;
+  const meetHour = parseHour12(currentTrip.meetTime);
   const [weather, marine] = await Promise.all([
-    getWeather(marina.lat, marina.lon, currentTrip.date),
+    getWeather(marina.lat, marina.lon, currentTrip.date, meetHour),
     getMarineConditions(currentTrip.date),
   ]);
 
@@ -30,10 +31,16 @@ export default async function PlanPage() {
     (e) => new Date(e.timeIso).getTime() > Date.now()
   );
 
+  // Anchored to the trip's meet time on the trip day, not Date.now() — the
+  // boat day can be days away, so "now" would either show today's hours or,
+  // once the hourly data is scoped to the trip day, nothing at all.
+  const tripMeetInstant = new Date(
+    `${currentTrip.date}T${String(meetHour).padStart(2, "0")}:00:00+10:00`
+  ).getTime();
   const relevantHourly =
     weather.hourly?.filter((h) => {
       const t = new Date(h.time).getTime();
-      return t >= Date.now() - 3600_000 && t <= Date.now() + 6 * 3600_000;
+      return t >= tripMeetInstant - 3600_000 && t <= tripMeetInstant + 6 * 3600_000;
     }) ?? [];
 
   return (
@@ -74,14 +81,12 @@ export default async function PlanPage() {
             <span className="text-sm">{currentTrip.marinaName}</span>
           </div>
 
-          {/* Forecast for the trip day, not "current" conditions — a guest
-              checking this before Friday cares what Friday looks like, not
-              what it's doing outside right now. */}
+          {/* Forecast for around the trip's meet time on the trip day — not
+              "current" conditions, and not a 24-hour high/low either. A guest
+              checking this before Friday cares what it'll be like around
+              10am Friday, not what it's doing outside right now. */}
           <p className="mt-4 text-5xl font-semibold tabular-nums">
-            {weather.available && weather.forDay ? `${weather.forDay.temperatureMax}°` : "—°"}
-            <span className="ml-1.5 text-xl font-medium text-white/60 align-middle">
-              {weather.available && weather.forDay ? `/${weather.forDay.temperatureMin}°` : ""}
-            </span>
+            {weather.available && weather.forDay ? `${weather.forDay.temperature}°` : "—°"}
             <span className="ml-3 text-xl font-medium text-white align-middle">
               {weather.available && weather.forDay ? weather.forDay.conditionDescription : "Weather not connected yet"}
             </span>
@@ -156,20 +161,20 @@ export default async function PlanPage() {
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1">
                 <p className="text-xs font-semibold uppercase tracking-[0.14em] text-white/85">Wind</p>
-                {weather.available && weather.current ? (
+                {weather.available && weather.forDay?.windSpeed !== undefined ? (
                   <>
                     <div className="mt-2 flex items-baseline gap-4">
                       <div>
                         <p className="text-3xl font-semibold tabular-nums">
-                          {kmhToKnots(weather.current.windSpeed)}
+                          {kmhToKnots(weather.forDay.windSpeed)}
                           <span className="text-base font-medium text-white/85"> kn</span>
                         </p>
                         <p className="text-xs text-white/85">Wind</p>
                       </div>
-                      {weather.current.windGust !== undefined && (
+                      {weather.forDay.windGust !== undefined && (
                         <div>
                           <p className="text-xl font-semibold tabular-nums">
-                            {kmhToKnots(weather.current.windGust)}
+                            {kmhToKnots(weather.forDay.windGust)}
                             <span className="text-sm font-medium text-white/85"> kn</span>
                           </p>
                           <p className="text-xs text-white/85">Gusts</p>
@@ -197,8 +202,8 @@ export default async function PlanPage() {
                   </p>
                 )}
               </div>
-              {weather.available && weather.current && (
-                <WindCompass directionDeg={weather.current.windDirection} />
+              {weather.available && weather.forDay?.windDirection !== undefined && (
+                <WindCompass directionDeg={weather.forDay.windDirection} />
               )}
             </div>
           </GlassCard>
@@ -253,21 +258,21 @@ export default async function PlanPage() {
           {/* Weather details */}
           <GlassCard>
             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-white/85">Weather on the Day</p>
-            {weather.available && weather.current ? (
+            {weather.available && weather.forDay ? (
               <div className="mt-3 grid grid-cols-2 gap-4 text-[15px]">
                 <div>
                   <p className="text-xs text-white/85">Feels like</p>
-                  <p className="text-xl font-semibold">{weather.current.temperatureApparent}°</p>
+                  <p className="text-xl font-semibold">
+                    {weather.forDay.temperatureApparent ?? weather.forDay.temperature}°
+                  </p>
                 </div>
                 <div>
                   <p className="text-xs text-white/85">UV index</p>
-                  <p className="text-xl font-semibold">{weather.current.uvIndex}</p>
+                  <p className="text-xl font-semibold">{weather.forDay.uvIndex ?? "—"}</p>
                 </div>
                 <div>
                   <p className="text-xs text-white/85">Rain chance</p>
-                  <p className="text-xl font-semibold">
-                    {Math.round((weather.forDay?.precipitationChance ?? weather.current.precipitationChance) * 100)}%
-                  </p>
+                  <p className="text-xl font-semibold">{Math.round(weather.forDay.precipitationChance * 100)}%</p>
                 </div>
                 <div>
                   <p className="text-xs text-white/85">Sunset</p>

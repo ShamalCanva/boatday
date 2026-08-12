@@ -70,9 +70,14 @@ export interface WeatherResult {
   forDay?: {
     date: string; // ISO date, matches the day this forecast is for
     temperature: number;
+    temperatureApparent?: number;
     conditionCode: string;
     conditionDescription: string;
     precipitationChance: number; // 0-1
+    uvIndex?: number;
+    windSpeed?: number; // km/h — only set when sourced from an hourly reading
+    windGust?: number;
+    windDirection?: number; // degrees
   };
   hourly?: Array<{
     time: string; // ISO
