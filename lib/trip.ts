@@ -29,8 +29,8 @@ export const currentTrip: CurrentTrip = {
   status: "on",
   statusLabel: "On",
   // Set by hand to match whatever mood/photo fits this specific day.
-  // "clear" falls back to a generated daytime gradient (no clear.jpg supplied yet).
-  backgroundMood: "clear",
+  // "sunset" pairs with public/backgrounds/sunset.jpg.
+  backgroundMood: "sunset",
   dayPlan:
     "We'll enjoy a relaxed harbour cruise under the Bridge, head to Athol Bay for the beach, Opera House and skyline views, then berth at Darling Harbour for lunch — likely Nick's Seafood. We should be back at Drummoyne around 4pm.\n\nPlease bring a hat, sunscreen, a light jacket and comfortable soft-soled shoes. Lifejackets will be provided. If you're prone to seasickness, take your usual medication before arriving.\n\nWeather permitting — I'll confirm everything on Friday.",
   lunchPlan: "Nick's Seafood, Darling Harbour",
