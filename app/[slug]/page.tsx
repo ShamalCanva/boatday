@@ -315,6 +315,11 @@ export default async function PlanPage({
             <p className="mt-1">
               These numbers are here to help you plan — the captain decides if today&rsquo;s conditions are right for the trip.
             </p>
+            <p className="mt-3">
+              <Link href={`/admin/${slug}`} className="text-white/40 underline">
+                Edit this trip
+              </Link>
+            </p>
           </div>
         </div>
       </div>
