@@ -1,0 +1,40 @@
+{
+  "date": "2026-09-06",
+  "meetTime": "10:00 am",
+  "departTime": "10:30 am",
+  "estimatedReturnTime": "3:00 pm",
+  "marinaLeaveTime": "3:30 pm",
+  "marinaName": "Corleone Marina, Drummoyne",
+  "status": "on",
+  "statusLabel": "On",
+  "backgroundMood": "sunset",
+  "dayPlan": "We'll enjoy a relaxed harbour cruise under the Bridge, head to Athol Bay for the beach, Opera House and skyline views, then berth at Darling Harbour for lunch — likely Nick's Seafood. We should be back at Drummoyne around 4pm. Please bring a hat, sunscreen, a light jacket and comfortable soft-soled shoes. Lifejackets will be provided. If you're prone to seasickness, take your usual medication before arriving. Weather permitting — I'll confirm everything on Friday.",
+  "lunchPlan": "Nick's Seafood",
+  "guests": [
+    {
+      "name": "SShamalSsdhamal",
+      "role": "Captain",
+      "status": "coming"
+    }
+  ],
+  "coordinates": {
+    "marina": {
+      "lat": -33.8531,
+      "lon": 151.1607,
+      "label": "Corleone Marina, Drummoyne",
+      "verified": false
+    },
+    "peppercornReserve": {
+      "lat": -33.8524624,
+      "lon": 151.1611663,
+      "label": "Peppercorn Reserve, St Georges Cres, Drummoyne NSW 2047",
+      "verified": true
+    },
+    "stairs": {
+      "lat": -33.8528,
+      "lon": 151.1608,
+      "label": "Stairs down to the marina, behind Peppercorn Reserve",
+      "verified": false
+    }
+  }
+}
