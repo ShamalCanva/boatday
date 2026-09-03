@@ -119,32 +119,35 @@ export default function AdminPage() {
 
   if (result) {
     return (
-      <main className="mx-auto min-h-screen max-w-lg px-6 py-16 text-white">
-        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-white/70">Published</p>
-        <h1 className="mt-2 text-2xl font-semibold">Trip is live</h1>
-        <p className="mt-3 text-[15px] text-white/85">
-          Vercel is redeploying now — usually live within a minute. Share this link once it's up:
-        </p>
-        <a
-          href={result.url}
-          target="_blank"
-          rel="noreferrer"
-          className="mt-4 block truncate rounded-xl border border-white/15 bg-white/10 px-4 py-3 text-coral underline"
-        >
-          {result.url}
-        </a>
-        <button
-          onClick={() => setResult(null)}
-          className="mt-6 rounded-full bg-white/10 px-5 py-2.5 text-[14px] font-semibold text-white"
-        >
-          Create another trip
-        </button>
+      <main className="min-h-screen bg-navy text-white">
+        <div className="mx-auto max-w-lg px-6 py-16">
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-white/70">Published</p>
+          <h1 className="mt-2 text-2xl font-semibold">Trip is live</h1>
+          <p className="mt-3 text-[15px] text-white/85">
+            Vercel is redeploying now — usually live within a minute. Share this link once it's up:
+          </p>
+          <a
+            href={result.url}
+            target="_blank"
+            rel="noreferrer"
+            className="mt-4 block truncate rounded-xl border border-white/15 bg-white/10 px-4 py-3 text-coral underline"
+          >
+            {result.url}
+          </a>
+          <button
+            onClick={() => setResult(null)}
+            className="mt-6 rounded-full bg-white/10 px-5 py-2.5 text-[14px] font-semibold text-white"
+          >
+            Create another trip
+          </button>
+        </div>
       </main>
     );
   }
 
   return (
-    <main className="mx-auto min-h-screen max-w-lg px-6 py-10 pb-24 text-white">
+    <main className="min-h-screen bg-navy text-white">
+    <div className="mx-auto max-w-lg px-6 py-10 pb-24">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">New Boat Day</h1>
         <button onClick={handleLogout} className="text-[13px] text-white/60 underline">
@@ -376,6 +379,7 @@ export default function AdminPage() {
           {submitting ? "Publishing…" : "Publish trip"}
         </button>
       </div>
+    </div>
     </main>
   );
 }
