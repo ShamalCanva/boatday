@@ -18,29 +18,32 @@ import type { CurrentTrip } from "./types";
  * in the code which pins still need your eyes on them.
  */
 export const currentTrip: CurrentTrip = {
-  date: "2026-08-14",
-  dayLabel: "Friday",
-  guestCount: 6,
+  date: "2026-09-05",
+  dayLabel: "Saturday",
+  guestCount: 8,
   meetTime: "10:00 am",
   departTime: "10:30 am",
-  estimatedReturnTime: "2:00 pm",
-  marinaLeaveTime: "2:30 pm",
+  estimatedReturnTime: "4:00 pm",
+  marinaLeaveTime: "4:30 pm",
   marinaName: "Corleone Marina, Drummoyne",
   status: "on",
   statusLabel: "On",
   // Set by hand to match whatever mood/photo fits this specific day.
-  // "sunset" pairs with public/backgrounds/sunset.jpg.
-  backgroundMood: "sunset",
+  // "clear" falls back to a generated daytime gradient (no clear.jpg supplied yet).
+  backgroundMood: "clear",
   dayPlan:
-    "We'll cruise out, collect lunch from Doyles on the Wharf Takeaway at Watsons Bay, find a mooring to settle in, enjoy the harbour, then cruise a little more before heading back.",
-  lunchPlan: "Doyles on the Wharf Takeaway, Watsons Bay",
+    "We'll enjoy a relaxed harbour cruise under the Bridge, head to Athol Bay for the beach, Opera House and skyline views, then berth at Darling Harbour for lunch — likely Nick's Seafood. We should be back at Drummoyne around 4pm.\n\nPlease bring a hat, sunscreen, a light jacket and comfortable soft-soled shoes. Lifejackets will be provided. If you're prone to seasickness, take your usual medication before arriving.\n\nWeather permitting — I'll confirm everything on Friday.",
+  lunchPlan: "Nick's Seafood, Darling Harbour",
   captainNote: undefined,
   guests: [
-    { name: "Shamal.S", role: "Captain", status: "coming" },
-    { name: "Matt.H", status: "coming" },
-    { name: "Mick.E", status: "coming" },
-    { name: "Arnold.L", status: "coming" },
-    { name: "Matt.A", status: "coming" },
+    { name: "Shamal", role: "Captain", status: "coming" },
+    { name: "Neelam", status: "coming" },
+    { name: "Zev", status: "coming" },
+    { name: "Tej", status: "coming" },
+    { name: "Nani", status: "coming" },
+    { name: "Nana", status: "coming" },
+    { name: "Neil", status: "coming" },
+    { name: "Shiv", status: "coming" },
   ],
   coordinates: {
     marina: {
