@@ -25,6 +25,12 @@ const DEFAULT_COORDS = {
 const inputClass =
   "w-full rounded-xl border border-white/15 bg-white/10 px-3 py-2.5 text-[15px] text-white outline-none placeholder:text-white/40 focus:border-coral";
 const labelClass = "mb-1 block text-xs font-semibold uppercase tracking-[0.08em] text-white/70";
+// Same look, but without the baked-in w-full — needed anywhere a field sits
+// in a flex row and needs its OWN width (flex-1 / w-28 / etc). Tailwind's
+// generated stylesheet doesn't order utilities by where they appear in a
+// class string, so pairing w-full with another width class in the same
+// className is a coin flip about which one wins; this avoids that fight.
+const fieldClassNoWidth = inputClass.replace("w-full ", "");
 
 function tripToGuestRows(trip?: CurrentTrip): GuestRow[] {
   if (!trip || trip.guests.length === 0) {
@@ -306,18 +312,18 @@ export default function TripForm({ mode, slug: fixedSlug, initialTrip }: TripFor
                     value={g.name}
                     onChange={(e) => updateGuest(i, { name: e.target.value })}
                     placeholder="Name"
-                    className={`${inputClass} flex-1`}
+                    className={`${fieldClassNoWidth} min-w-0 flex-1`}
                   />
                   <input
                     value={g.role}
                     onChange={(e) => updateGuest(i, { role: e.target.value })}
                     placeholder="Role"
-                    className={`${inputClass} w-24`}
+                    className={`${fieldClassNoWidth} w-28 shrink-0`}
                   />
                   <select
                     value={g.status}
                     onChange={(e) => updateGuest(i, { status: e.target.value as GuestStatus })}
-                    className={`${inputClass} w-32`}
+                    className={`${fieldClassNoWidth} w-[8.5rem] shrink-0`}
                   >
                     <option value="coming">coming</option>
                     <option value="maybe">maybe</option>
