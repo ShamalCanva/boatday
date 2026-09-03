@@ -1,8 +1,9 @@
 export type TripStatus = "on" | "weather-watch" | "updated" | "cancelled";
 
-// The Plan tab's background mood. Set once per trip in lib/trip.ts, not
-// computed live from weather — a boat day happens once, so the background
-// doesn't need to shift under a guest as they look at the page.
+// The Plan tab's background mood. Set once per trip (in the admin form, or
+// a data/trips/*.json file), not computed live from weather — a boat day
+// happens once, so the background doesn't need to shift under a guest as
+// they look at the page.
 export type SkyCondition = "clear" | "cloudy" | "rain" | "sunset" | "night";
 
 export type GuestStatus = "coming" | "maybe" | "not-coming";
@@ -16,9 +17,6 @@ export interface Guest {
 export interface CurrentTrip {
   /** ISO date, e.g. "2026-08-14" */
   date: string;
-  /** e.g. "Friday" */
-  dayLabel: string;
-  guestCount: number;
   meetTime: string; // "10:00 am"
   departTime: string; // "10:30 am"
   estimatedReturnTime: string; // "2:00 pm" — back at the marina for a wash down

@@ -5,14 +5,26 @@ import { usePathname } from "next/navigation";
 import { CompassIcon, PinIcon, AnchorIcon, LifeRingIcon } from "./icons";
 
 const TABS = [
-  { href: "/", label: "Plan", Icon: CompassIcon },
-  { href: "/get-there", label: "Get There", Icon: PinIcon },
-  { href: "/on-board", label: "On Board", Icon: AnchorIcon },
-  { href: "/safety", label: "Safety", Icon: LifeRingIcon },
+  { segment: "", label: "Plan", Icon: CompassIcon },
+  { segment: "get-there", label: "Get There", Icon: PinIcon },
+  { segment: "on-board", label: "On Board", Icon: AnchorIcon },
+  { segment: "safety", label: "Safety", Icon: LifeRingIcon },
 ];
 
 export default function BottomNav() {
   const pathname = usePathname();
+
+  // Admin pages have their own layout/flow — no guest-facing tab bar there.
+  if (pathname?.startsWith("/admin")) return null;
+
+  // First path segment after the root is the trip slug, e.g.
+  // "/05sep-2026/get-there" -> "05sep-2026". Falls back to nothing while the
+  // root "/" redirect is still resolving.
+  const segments = pathname?.split("/").filter(Boolean) ?? [];
+  const slug = segments[0];
+  const currentSubSegment = segments[1] ?? "";
+
+  if (!slug) return null;
 
   return (
     <nav
@@ -20,10 +32,11 @@ export default function BottomNav() {
       aria-label="Primary"
     >
       <ul className="mx-auto flex max-w-md items-stretch justify-between px-2">
-        {TABS.map(({ href, label, Icon }) => {
-          const isActive = pathname === href;
+        {TABS.map(({ segment, label, Icon }) => {
+          const href = segment ? `/${slug}/${segment}` : `/${slug}`;
+          const isActive = currentSubSegment === segment;
           return (
-            <li key={href} className="flex-1">
+            <li key={segment || "plan"} className="flex-1">
               <Link
                 href={href}
                 aria-current={isActive ? "page" : undefined}
