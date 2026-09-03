@@ -12,8 +12,37 @@
   "lunchPlan": "Nick's Seafood",
   "guests": [
     {
-      "name": "SShamalSsdhamal",
+      "name": "Shamal",
       "role": "Captain",
+      "status": "coming"
+    },
+    {
+      "name": "Neelam",
+      "role": "Co-Captain",
+      "status": "coming"
+    },
+    {
+      "name": "Zev",
+      "status": "coming"
+    },
+    {
+      "name": "Tej",
+      "status": "coming"
+    },
+    {
+      "name": "Nani",
+      "status": "coming"
+    },
+    {
+      "name": "Nana",
+      "status": "coming"
+    },
+    {
+      "name": "Neil",
+      "status": "coming"
+    },
+    {
+      "name": "Shiv",
       "status": "coming"
     }
   ],
